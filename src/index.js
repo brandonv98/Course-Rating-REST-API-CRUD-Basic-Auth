@@ -7,7 +7,7 @@ const morgan = require('morgan');
 const app = express();
 
 // set our port
-app.set('port', process.env.PORT || 5000);
+app.set('port', process.env.PORT || 3000);
 
 // morgan gives us http request logging
 app.use(morgan('dev'));
