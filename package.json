@@ -12,7 +12,10 @@
     "nodemon": "^1.17.5"
   },
   "dependencies": {
+    "connect-mongo": "^3.0.0",
     "express": "^4.16.3",
+    "mongodb": "^3.2.7",
+    "mongoose": "^5.6.0",
     "morgan": "^1.9.0",
     "pug": "^2.0.4"
   }
