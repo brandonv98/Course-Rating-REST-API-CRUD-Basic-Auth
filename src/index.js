@@ -2,15 +2,39 @@
 
 // load modules
 const express = require('express');
+const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+
+// DB Config
+const dbName = 'course-api';
+const url = "mongodb://localhost:27017/course-api";
+const mongoOptions = {useNewUrlParser : true};
+
 // const MongoStore = require('connect-mongo')(session);
 
 // mongodb connection
-mongoose.connect("mongodb://localhost:27017/");
-const db = mongoose.connection;
+// mongoose.connect("mongodb://localhost:27017/course-api");
+// const db = mongoose.connection;
+
+
 // mongo error
-db.on('error', console.error.bind(console, 'connection error:'));
+// db.on('error', console.error.bind(console, 'connection error:'));
+// Use connect method to connect to the Server
+MongoClient.connect(url, function(err, client) {
+  assert.equal(null, err);
+  client.close();
+
+  const db = client.db("course-api");
+
+  // console.log(db.collection('').find({}));
+
+  var cursor = db.collection('reviews').find({});
+  console.log(cursor, client);
+});
+
 
 // use sessions for tracking logins
 // app.use(session({
@@ -22,6 +46,18 @@ db.on('error', console.error.bind(console, 'connection error:'));
 
 const app = express();
 
+// parse incoming requests
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+
+
+// serve static files from /public
+app.use(express.static(__dirname + '/public'));
+
+// view engine setup
+app.set('view engine', 'pug');
+app.set('views', __dirname + '/views');
+
 // set our port
 app.set('port', process.env.PORT || 3000);
 
@@ -30,12 +66,9 @@ app.use(morgan('dev'));
 
 // TODO add additional routes here
 
-// send a friendly greeting for the root route
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Welcome to the Course Review API'
-  });
-});
+const routes = require('./routes/index');
+app.use('/', routes);
+
 
 // uncomment this route in order to test the global error handler
 // app.get('/error', function (req, res) {
