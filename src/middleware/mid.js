@@ -16,7 +16,7 @@ const clearSessionToken = (req, res, next) => {
   }
 };
 // Check if user is authenticated with session token.
-const isUserAuth = () => {
+const isUserAuth = (req, res, next) => {
   // Check for authorization.
   if (!req.session.userId) {
     const err = new Error('You are unauthorized to view this page.');
@@ -27,6 +27,7 @@ const isUserAuth = () => {
   }
 }
 
+// Authenticate user on login.
 const authenticateUser = (req, res, next) => {
   let message = null;
   // let user; Get the user's credentials from the Authorization header.
