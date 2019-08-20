@@ -1,7 +1,8 @@
 const auth = require('basic-auth');
-const bcryptjs = require('bcryptjs');
-const Users = require('../models/user').Users;
-const {check, validationResult} = require('express-validator/check');
+// const bcryptjs = require('bcryptjs');
+const User = require('../models/user');
+// const Courses = require('../models/course');
+// const {check, validationResult} = require('express-validator/check');
 
 // Delete session object
 const clearSessionToken = (req, res, next) => {
@@ -14,7 +15,8 @@ const clearSessionToken = (req, res, next) => {
           : console.log('Session destroyed : true.'));
       });
   }
-};
+}
+
 // Check if user is authenticated with session token.
 const isUserAuth = (req, res, next) => {
   // Check for authorization.
@@ -27,58 +29,50 @@ const isUserAuth = (req, res, next) => {
   }
 }
 
+const findUser = (req, res, next) => {
+  console.log(req.params.courseId);
+  Courses
+    .findOne({_id: req.params.courseId})
+    .exec((err, course) => {
+      User
+      .findOne({_id: course.user})
+      .exec((error, user) => {
+        console.log(user);
+        return next();
+      });
+      return next();
+    });
+}
+
+
 // Authenticate user on login.
 const authenticateUser = (req, res, next) => {
-  let message = null;
-  // let user; Get the user's credentials from the Authorization header.
   const credentials = auth(req);
 
   if (credentials) {
-    // Find req user in DB.
-    Users
-      .findOne({emailAddress: credentials.name})
-      .exec(function (error, user) {
-        if (error) {
-          return next(err);
-        } else if (!user) {
-          const error = new Error('User not found.');
-          error.status = 401;
-          return next(error);
-        }
-        // Verify user credentials are entered.
-        if (user) {
-          const authenticated = bcryptjs.compareSync(credentials.pass, user.password);
-
-          // console.log(authenticated);
-          if (authenticated) {
-            console.log(`Authentication successful for user: ${user.fullName}`);
-
-            // Store the user on the Request object.
-            req.currentUser = user;
-            req.session.userId = user._id;
-            res.json(user);
-            // req.loggedUser = user.fullName;
-          } else {
-            message = `Authentication failure for username: ${user.emailAddress}`;
-            res.json({message: "Authentication failure for username or password."});
-          }
-        } else {
-          message = `User not found for username: ${credentials.emailAddress}`;
-        }
-      });
-
+    User.authenticate(credentials.name, credentials.pass, (err, user) => {
+      if (err) {
+        return next(err);
+      } else if (!user) {
+        const err = new Error("No user found with that Auth.");
+        err.status = 401;
+        return next(err);
+      } else if (user) {
+        req.currentUser = user;
+        // req.session.userId = user._id;
+        console.log(req.session.userId);
+        return next();
+      }
+    });
   } else {
-    message = 'Auth header not found';
-  }
-
-  if (message) {
-    console.warn(message);
-    res
-      .status(401)
-      .json({message: 'Access Denied'});
-  } else {
-    return next();
+    const err = new Error("Auth header not found");
+    err.status = 401;
+    return next(err);
   }
 };
 
+//  ---------- EXPORT MODULES ----------  //
 module.exports.authenticateUser = authenticateUser;
+module.exports.findUser = findUser;
+module.exports.isUserAuth = isUserAuth;
+module.exports.clearSessionToken = clearSessionToken;
