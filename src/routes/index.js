@@ -12,9 +12,8 @@ const bcryptjs = require('bcryptjs');
 const auth = require('basic-auth');
 
 // ----------- USER ROUTES ---------- // Route that returns the current
-// authenticated user.
+// authenticated user && return user data.
 router.get('/users', mid.authenticateUser, (req, res) => {
-    // console.log(req.currentUser, req.session.userId);
     res.json({
       user: req.currentUser,
     });
@@ -121,12 +120,6 @@ router.post('/courses', mid.authenticateUser, (req, res, next) => {
 //  ---------- REVIEWS ROUTE ---------- // Create reviews for specific course &&
 // append to course.
 router.post('/courses/:courseId/reviews', mid.authenticateUser, (req, res, next) => {
-  // console.log(req.currentUser);
-  // if ((req.currentUser._id).toString() === (req.course.user).toString()) {
-  //   const err = new Error("You are not allowed to review your own course.");
-  //   err.status = 403;
-  //   return next(err);
-  // }
   
   const review = new Review(req.body);
   
@@ -151,7 +144,6 @@ router.post('/courses/:courseId/reviews', mid.authenticateUser, (req, res, next)
             .location('/')
             .status(201)
             return res.end();
-            // .json(course);
         });
       });
   });
