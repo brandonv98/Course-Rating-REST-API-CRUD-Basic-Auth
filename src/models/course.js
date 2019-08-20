@@ -1,21 +1,25 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
-const CoursesSchema = new Schema({
+const CourseSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  },
   title: {
     type: String,
     required: true
-  },
-  user: {
-    _id: String,
   },
   description: {
     type: String,
     required: true
   },
-  estimatedTime: String,
-  materialsNeeded: String,
+  estimatedTime: {
+    type: String
+  },
+  materialsNeeded: {
+    type: String
+  },
   steps: [
     {
       stepNumber: Number,
@@ -27,17 +31,8 @@ const CoursesSchema = new Schema({
         type: String,
         required: true
       }
-    },
+    }
   ],
-  reviews: {
-    steps: [
-      {
-        stepNumber: Number,
-        title: String,
-        description: String
-      },
-    ],
-  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -45,13 +40,18 @@ const CoursesSchema = new Schema({
   updatedAt: {
     type: Date,
     default: Date.now
+  },
+  reviews: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Review"
+      }
+    ],
   }
 });
 
-CoursesSchema.pre("save", function (next) {
-  next();
-});
 
-const Courses = mongoose.model("Courses", CoursesSchema);
+const Course = mongoose.model("Course", CourseSchema);
 
-module.exports.Courses = Courses;
+module.exports = Course;

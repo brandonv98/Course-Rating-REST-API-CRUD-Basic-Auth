@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
-const ReviewsSchema = new Schema({
+const ReviewSchema = new Schema({
   user: {
-    _id: String
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
   postedOn: {
     type: Date,
@@ -12,17 +12,20 @@ const ReviewsSchema = new Schema({
   },
   rating: {
     type: Number,
-    default: 0
+    default: 0,
+    required: true,
+		min: 1,
+		max: 5
   },
   review: {
     type: String
   }
 });
 
-ReviewsSchema.pre("save", function (next) {
-  next();
-});
+// ReviewSchema.pre("save", function (next) {
+//   next();
+// });
 
-const Reviews = mongoose.model("Reviews", ReviewsSchema);
+const Review = mongoose.model("Review", ReviewSchema);
 
-module.exports.Reviews = Reviews;
+module.exports = Review;
