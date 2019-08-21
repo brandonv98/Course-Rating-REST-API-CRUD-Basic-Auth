@@ -68,10 +68,8 @@ Course
 
 //  Update course.
 router.put('/courses/:coursesId', mid.authenticateUser, (req, res, next) => {
-  // Create new course Add data to DB. Return no data && set params to '/'.
   Course
     .findById({_id: req.params.coursesId})
-  // Update the document.
     .update(req.body)
     .exec((err, course) => {
       if (err) 
