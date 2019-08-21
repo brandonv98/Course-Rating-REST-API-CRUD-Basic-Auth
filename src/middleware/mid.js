@@ -15,7 +15,6 @@ const authenticateUser = (req, res, next) => {
         return next(err);
       } else if (user) {
         req.currentUser = user;
-        // req.session.userId = user._id;
         return next();
       }
     });
