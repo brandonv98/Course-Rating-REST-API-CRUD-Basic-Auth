@@ -37,12 +37,9 @@ router.post('/users', (req, res, next) => {
 });
 
 //   ---------- COURSE ROUTES. ----------   //
-router.get('/courses', mid.isUserAuth, mid.authenticateUser, (req, res, next) => {
+router.get('/courses', mid.authenticateUser, (req, res, next) => {
   Course
-    .find({}
-      // {title: true}
-      )
-    // .sort({createdAt: -1})
+    .find({},{title: true})
     .exec(function (err, courses) {
       if (err) 
         return next(err);
@@ -65,7 +62,6 @@ Course
       if (err) 
         return next(err);
 
-        console.log(courses);
       res.status(200);
       res.json(courses);
       return res.end();
@@ -120,9 +116,11 @@ router.post('/courses', mid.authenticateUser, (req, res, next) => {
 //  ---------- REVIEWS ROUTE ---------- // Create reviews for specific course &&
 // append to course.
 router.post('/courses/:courseId/reviews', mid.authenticateUser, (req, res, next) => {
-  
+
   const review = new Review(req.body);
-  
+  // Add user _id to review
+  review.user = req.currentUser;
+  console.log(review.user.fullName);
   review.save((err) => {
     if (err) {
       err.status = 400;

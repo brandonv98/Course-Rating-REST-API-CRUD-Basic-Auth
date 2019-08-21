@@ -1,48 +1,7 @@
 const auth = require('basic-auth');
-// const bcryptjs = require('bcryptjs');
 const User = require('../models/user');
-// const Courses = require('../models/course');
-// const {check, validationResult} = require('express-validator/check');
 
-// Delete session object
-const clearSessionToken = (req, res, next) => {
-  if (req.session) {
-    req
-      .session
-      .destroy((err) => {
-        return (err
-          ? next(err)
-          : console.log('Session destroyed : true.'));
-      });
-  }
-}
 
-// Check if user is authenticated with session token.
-const isUserAuth = (req, res, next) => {
-  // Check for authorization.
-  if (!req.session.userId) {
-    const err = new Error('You are unauthorized to view this page.');
-    err.status = 403;
-    return next(err);
-  } else {
-    return next();
-  }
-}
-
-const findUser = (req, res, next) => {
-  console.log(req.params.courseId);
-  Courses
-    .findOne({_id: req.params.courseId})
-    .exec((err, course) => {
-      User
-      .findOne({_id: course.user})
-      .exec((error, user) => {
-        console.log(user);
-        return next();
-      });
-      return next();
-    });
-}
 
 
 // Authenticate user on login.
@@ -60,7 +19,6 @@ const authenticateUser = (req, res, next) => {
       } else if (user) {
         req.currentUser = user;
         // req.session.userId = user._id;
-        console.log(req.session.userId);
         return next();
       }
     });
@@ -73,6 +31,3 @@ const authenticateUser = (req, res, next) => {
 
 //  ---------- EXPORT MODULES ----------  //
 module.exports.authenticateUser = authenticateUser;
-module.exports.findUser = findUser;
-module.exports.isUserAuth = isUserAuth;
-module.exports.clearSessionToken = clearSessionToken;

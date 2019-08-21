@@ -5,13 +5,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-const assert = require('assert');
+
 // Create express app
 const app = express();
-const session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
-const auth = require('basic-auth');
+
 const url = `mongodb://localhost:27017/course-api`;
+
 
 mongoose.connect(`${url}`);
 const db = mongoose.connection;
@@ -19,30 +18,9 @@ const db = mongoose.connection;
 // Mongo error catch
 db.on('error', console.error.bind(console, 'connection error:'));
 
-// use sessions for tracking logins
-app.use(session({
-  secret: 'course api secret',
-  resave: true,
-  saveUninitialized: false,
-  store: new MongoStore({mongooseConnection: db})
-}));
-
-// Make user ID available in template.
-app.use((req, res, next) => {
-  res.locals.currentUser = req.session.userId;
-  next();
-});
-
-// make user ID available in templates
-app.use((req, res, next) => {
-  res.locals.currentUser = req.session.userId;
-  next();
-});
-
 // MandoDB connection
 db.once("open", () => {
   console.log("db connection successful");
-  // db.close();
 });
 
 // app.use(jsonCheck);
@@ -62,8 +40,7 @@ app.set('port', process.env.PORT || 5000);
 // morgan gives us http request logging
 app.use(morgan('dev'));
 
-// TODO add additional routes here
-
+// API routes = /api.
 const routes = require('./routes/index');
 app.use('/api', routes);
 
