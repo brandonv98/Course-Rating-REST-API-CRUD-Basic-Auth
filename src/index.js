@@ -11,7 +11,6 @@ const app = express();
 
 const url = `mongodb://localhost:27017/course-api`;
 
-
 mongoose.connect(`${url}`);
 const db = mongoose.connection;
 
@@ -23,10 +22,9 @@ db.once("open", () => {
   console.log("db connection successful");
 });
 
-// app.use(jsonCheck);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-// app.use(jsonCheck);
+
 // serve static files from /public
 app.use(express.static(__dirname + '/public'));
 
@@ -44,8 +42,6 @@ app.use(morgan('dev'));
 const routes = require('./routes/index');
 app.use('/api', routes);
 
-// uncomment this route in order to test the global error handler
-// app.get('/error', function (req, res) {   throw new Error('Test error'); });
 // send 404 if no other route matched
 app.use((req, res) => {
   res
