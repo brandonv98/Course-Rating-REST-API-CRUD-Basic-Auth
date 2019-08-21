@@ -12,10 +12,8 @@ const auth = require('basic-auth');
 // ----------- USER ROUTES ---------- // Route that returns the current
 // authenticated user && return user data.
 router.get('/users', mid.authenticateUser, (req, res) => {
-    res.json({
-      user: req.currentUser,
-    });
-    return res.end();
+  res.json({user: req.currentUser});
+  return res.end();
 });
 
 // // Route that creates a new user.
@@ -36,8 +34,7 @@ router.post('/users', (req, res, next) => {
 
 //   ---------- COURSE ROUTES. ----------   //
 router.get('/courses', mid.authenticateUser, (req, res, next) => {
-  Course
-    .find({},{title: true})
+  Course.find({}, {title: true})
     .exec(function (err, courses) {
       if (err) 
         return next(err);
@@ -48,18 +45,14 @@ router.get('/courses', mid.authenticateUser, (req, res, next) => {
 
 // Get specific course by ID.
 router.get('/courses/:courseId', mid.authenticateUser, (req, res, next) => {
-Course
+  Course
     .findOne({_id: req.params.courseId})
-    .populate({
-      path: "user",
-      select: "fullName",
-      model: "User",
-    })
+    .populate({path: "user", select: "fullName", model: "User"})
     .populate("reviews")
     .exec((err, courses) => {
       if (err) 
         return next(err);
-
+      
       res.status(200);
       res.json(courses);
       return res.end();
@@ -103,8 +96,9 @@ router.post('/courses', mid.authenticateUser, (req, res, next) => {
     // Set the status to 201 Created and end the response.
     if (err) 
       return next(err);
-    res.status(201)
-    .location('/');
+    res
+      .status(201)
+      .location('/');
     return res.end();
   });
 });
@@ -128,15 +122,18 @@ router.post('/courses/:courseId/reviews', mid.authenticateUser, (req, res, next)
       .exec((err, course) => {
         if (err) 
           return next(err);
+        
         // Add users review to the course.
-        course.reviews.push(review);
+        course
+          .reviews
+          .push(review);
         course.save(err => {
           if (err) 
             return next(err);
           res
             .location('/')
             .status(201)
-            return res.end();
+          return res.end();
         });
       });
   });
