@@ -7,8 +7,6 @@ const User = require('../models/user');
 const Course = require('../models/course');
 const mid = require('../middleware/mid');
 
-const {check, validationResult} = require('express-validator/check');
-const bcryptjs = require('bcryptjs');
 const auth = require('basic-auth');
 
 // ----------- USER ROUTES ---------- // Route that returns the current
@@ -116,11 +114,10 @@ router.post('/courses', mid.authenticateUser, (req, res, next) => {
 //  ---------- REVIEWS ROUTE ---------- // Create reviews for specific course &&
 // append to course.
 router.post('/courses/:courseId/reviews', mid.authenticateUser, (req, res, next) => {
-
   const review = new Review(req.body);
   // Add user _id to review
   review.user = req.currentUser;
-  console.log(review.user.fullName);
+
   review.save((err) => {
     if (err) {
       err.status = 400;
