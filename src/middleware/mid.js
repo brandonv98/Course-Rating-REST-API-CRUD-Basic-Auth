@@ -1,9 +1,6 @@
 const auth = require('basic-auth');
 const User = require('../models/user');
 
-
-
-
 // Authenticate user on login.
 const authenticateUser = (req, res, next) => {
   const credentials = auth(req);
