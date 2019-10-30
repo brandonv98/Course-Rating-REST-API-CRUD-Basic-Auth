@@ -1,4 +1,4 @@
-# REST API With Basic Auth
+# Course Rating API -- REST API With Basic Auth
 REST API Build, using mongoDB for data storage. Express for all the heavy lifting.
 
 
